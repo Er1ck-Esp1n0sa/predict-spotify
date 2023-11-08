@@ -11,20 +11,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    
     - name: python version
       run: python --version
+    
     - name: Instalar dependencias
       run: pip install -r requirements.txt
+    
     - name: download dataset
-      run: wget -O data/spotify.csv ${{github.event.client_payload.dataseturl}}
+      run: wget -O "https://firebasestorage.googleapis.com/v0/b/prediction-spotify.appspot.com/o/playlist.csv?alt=media&token=0329091b-d094-42dd-a9ad-a3fedd1c80f6" ${{github.event.client_payload.dataseturl}}
+    
     - name: cat dataset
       run: cat data/playlist.csv
+    
     - name: Entrenar modelo de Machine Learning
       run: python model/random_forest/random_forest.py
+    
     - name: Constuir Imagen Docker
       run: docker build -t ${{secrets.DOCKER_USER}}/${{secrets.MODEL_NAME}}:${{github.sha}} .
+    
     - name: show docker images
       run: docker images
+   
     - name: docker login
       env:
         DOCKER_USER: ${{secrets.DOCKER_USER}}
